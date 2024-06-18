@@ -5,6 +5,8 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import { ConfigSchema } from './config.schema';
 
+import * as express from 'express';
+
 function useSwagger(app: INestApplication) {
   const config = new DocumentBuilder().setTitle('IOT Backoffice API').build();
   const document = SwaggerModule.createDocument(app, config);
@@ -17,6 +19,13 @@ async function bootstrap() {
 
   // Swagger Document
   useSwagger(app);
+
+  app.use(express.json({ limit: '10mb' }));
+  app.use(express.urlencoded({ limit: '10mb', extended: true }));
+
+  app.enableCors({
+    origin: '*',
+  });
 
   const port = configService.get<number>('PORT', 4000);
   await app.listen(port, () => {

@@ -1,0 +1,21 @@
+version: '3.4'
+
+services:
+  iotbofservice:
+    image: iotbofservice
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    ports:
+      - 4000:4000
+    command: ['node', 'dist/main']
+
+  mongo:
+    image: mongo:latest
+    ports:
+      - '27017:27017'
+    volumes:
+      - mongo-data:/data/db
+
+volumes:
+  mongo-data:
