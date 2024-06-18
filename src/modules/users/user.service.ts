@@ -36,4 +36,16 @@ export class UserService {
   private async hashPassword(password: string): Promise<string> {
     return await bcrypt.hash(password, 10);
   }
+
+  private async findByEmailForValidation(email: string): Promise<User> {
+    const query = { email };
+    return await this.userModel.findOne(query);
+  }
+
+  async verifyPassword(email: string, password: string): Promise<User> {
+    const user = await this.findByEmailForValidation(email);
+    if (!user) return null;
+    const validPassword = await bcrypt.compare(password, user.password);
+    return validPassword ? user : null;
+  }
 }
