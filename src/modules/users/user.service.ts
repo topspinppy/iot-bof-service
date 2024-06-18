@@ -16,7 +16,6 @@ export class UserService {
   async create(newUser: CreateUserDto): Promise<User> {
     const { email, password, userName, fullName } = newUser;
     const hashPassword = await this.hashPassword(password);
-    console.log(hashPassword);
     const createdUser = new this.userModel({
       userName,
       password: hashPassword,
@@ -24,21 +23,14 @@ export class UserService {
       email,
     });
 
-    console.log(createdUser, {
-      userName,
-      password: hashPassword,
-      fullName,
-      email,
-    });
+    const user = await createdUser.save();
+    user.password = undefined;
+    return user;
+  }
 
-    try {
-      const user = await createdUser.save();
-      console.log('Saved User:', user);
-      return user;
-    } catch (error) {
-      console.error('Error saving user:', error);
-      throw error;
-    }
+  async findById(userId: string): Promise<UserDocument> {
+    const user = await this.userModel.findById({ _id: userId });
+    return user;
   }
 
   private async hashPassword(password: string): Promise<string> {

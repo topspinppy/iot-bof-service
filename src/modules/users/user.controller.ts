@@ -1,4 +1,5 @@
-import { Body, Controller, HttpCode, Post } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, Post, Req } from '@nestjs/common';
+import { Request } from 'express';
 import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './schema/user.schema';
 import { UserService } from './user.service';
@@ -11,5 +12,12 @@ export class UserController {
   @HttpCode(201)
   async create(@Body() createUser: CreateUserDto): Promise<User> {
     return await this.userService.create(createUser);
+  }
+
+  @Get('profile/:id')
+  @HttpCode(200)
+  async getProfile(@Req() request: Request): Promise<User> {
+    const user = await this.userService.findById(request.params.id);
+    return user;
   }
 }

@@ -1,10 +1,11 @@
-import { Prop, SchemaFactory } from '@nestjs/mongoose';
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Transform } from 'class-transformer';
 import { Document, Types } from 'mongoose';
 import * as mongoosePaginate from 'mongoose-paginate-v2';
 
 export type UserDocument = User & Document;
 
+@Schema()
 export class User {
   @Transform(({ value }) => value.toString())
   _id: Types.ObjectId;
@@ -12,7 +13,6 @@ export class User {
   @Prop({
     type: String,
     unique: true,
-    index: true,
     isRequired: true,
     trim: true,
     maxLength: 100,
@@ -22,7 +22,6 @@ export class User {
   @Prop({
     type: String,
     unique: false,
-    index: true,
     isRequired: true,
     trim: true,
     maxLength: 100,
@@ -31,7 +30,6 @@ export class User {
 
   @Prop({
     type: String,
-    index: true,
     isRequired: true,
     trim: true,
     maxLength: 100,
@@ -41,7 +39,6 @@ export class User {
   @Prop({
     type: String,
     unique: true,
-    index: true,
     isRequired: true,
     trim: true,
     maxLength: 100,
