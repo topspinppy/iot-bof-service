@@ -6,7 +6,7 @@
     "pnpm-lock.lock": true
   },
   "editor.formatOnPaste": true,
-  "editor.formatOnSave": true,
+  // "editor.formatOnSave": true,
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "files.trimTrailingWhitespace": true,
   "editor.codeActionsOnSave": {
