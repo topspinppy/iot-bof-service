@@ -1,6 +1,7 @@
 import { getModelToken } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as bcrypt from 'bcrypt';
+import { MockProxy, mock } from 'jest-mock-extended';
 import { Model, Types } from 'mongoose';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { User, UserDocument } from '../schema/user.schema';
@@ -22,28 +23,22 @@ const mockUser = (
 
 describe('UserService', () => {
   let service: UserService;
-  let userModel: Model<UserDocument>;
+  let userModel: MockProxy<Model<UserDocument>>;
 
   beforeEach(async () => {
+    userModel = mock<Model<UserDocument>>();
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         UserService,
         {
           provide: getModelToken(User.name),
-          useValue: {
-            new: jest.fn().mockResolvedValue(mockUser()),
-            constructor: jest.fn().mockResolvedValue(mockUser()),
-            create: jest.fn(),
-            findById: jest.fn(),
-            findOne: jest.fn(),
-            save: jest.fn(),
-          },
+          useValue: userModel,
         },
       ],
     }).compile();
 
     service = module.get<UserService>(UserService);
-    userModel = module.get<Model<UserDocument>>(getModelToken(User.name));
   });
 
   it('should be defined', () => {
@@ -62,7 +57,7 @@ describe('UserService', () => {
       const hashedPassword = 'hashedPassword';
 
       jest.spyOn(service, 'hashPassword').mockResolvedValue(hashedPassword);
-      jest.spyOn(userModel, 'create').mockResolvedValue({
+      userModel.create.mockResolvedValue({
         ...createUserDto,
         _id: new Types.ObjectId(),
         password: hashedPassword,
@@ -81,14 +76,13 @@ describe('UserService', () => {
       const userId = '4edd40c86762e0fb12000003';
       const user = mockUser(userId);
 
-      jest.spyOn(userModel, 'findById').mockReturnValue({
-        exec: jest.fn().mockResolvedValue(user),
+      userModel.findById.mockReturnValue({
+        exec: jest.fn().mockReturnValue(user),
       } as any);
 
       const foundUser = await service.findById(userId);
-
-      expect(foundUser).toBeDefined();
-      expect(foundUser.email).toBe('test@example.com');
+      expect(foundUser['exec']()).toBeDefined();
+      expect(foundUser['exec']()['email']).toBe('test@example.com');
     });
   });
 
@@ -105,14 +99,14 @@ describe('UserService', () => {
 
   describe('findByEmailForValidation', () => {
     it('should find a user by email for validation', async () => {
-      jest.spyOn(userModel, 'findOne').mockReturnValue({
-        exec: jest.fn().mockResolvedValue(mockUser()),
+      userModel.findOne.mockReturnValue({
+        exec: jest.fn().mockReturnValue(mockUser()),
       } as any);
 
       const user = await service.findByEmailForValidation('test@example.com');
 
-      expect(user).toBeDefined();
-      expect(user.email).toBe('test@example.com');
+      expect(user['exec']()).toBeDefined();
+      expect(user['exec']()['email']).toBe('test@example.com');
     });
   });
 
