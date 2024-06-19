@@ -17,6 +17,16 @@ COPY . .
 RUN pnpm run build
 
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+#   MongoDB initialization stage
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+FROM mongo:latest AS mongo-seed
+
+WORKDIR /docker-entrypoint-initdb.d
+
+# Copy mongo-init.js from root folder
+COPY ./mongo-init.js .
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 #   Run stage
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 

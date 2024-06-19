@@ -1,4 +1,4 @@
-version: '3.4'
+version: '3.9'
 
 services:
   iotbofservice:
@@ -25,6 +25,7 @@ services:
       - '27017:27017'
     volumes:
       - mongo-data:/data/db
+      - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro  # Mount seeding script
     networks:
       - mynetwork
 
