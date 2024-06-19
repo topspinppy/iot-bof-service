@@ -1,20 +1,25 @@
-import { CallHandler, ExecutionContext, Injectable, NestInterceptor, UnauthorizedException } from '@nestjs/common';
+import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Request } from 'express';
 import { ExtractJwt } from 'passport-jwt';
-import { Observable } from 'rxjs';
-import { AuthenticationService, TokenType } from 'src/modules/authentication/services/authentication.services';
+import { AuthenticationService } from 'src/modules/authentication/services/authentication.services';
+
+enum TokenType {
+  AccessToken = 'accessToken',
+  RefreshToken = 'refreshToken',
+}
 
 @Injectable()
-export class AuthenticationInterceptor implements NestInterceptor {
+export class AuthenticationGuard implements CanActivate {
   constructor(
     private readonly configService: ConfigService,
     private readonly authenticationService: AuthenticationService
   ) {}
 
-  async intercept(context: ExecutionContext, next: CallHandler): Promise<Observable<unknown>> {
+  async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest<Request>();
     const accessToken = this.getAccessToken(request);
+
     const payload = await this.authenticationService.verifyAccessToken(accessToken);
 
     if (this.authenticationService.isAccessTokenDenied()) {
@@ -26,13 +31,12 @@ export class AuthenticationInterceptor implements NestInterceptor {
       accessTokenJti: payload.jti,
     };
 
-    return next.handle();
+    return true;
   }
 
   private getAccessToken(request: Request): string {
     const headerToken = ExtractJwt.fromAuthHeaderAsBearerToken()(request);
     if (headerToken) return headerToken;
-
     console.log(request);
     const accessToken = request.cookies[TokenType.AccessToken];
     if (!accessToken) {
