@@ -4,7 +4,7 @@ import { Request } from 'express';
 import { AuthenticationGuard } from '../shared/guards/auth.guard';
 import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './schema/user.schema';
-import { UserService } from './user.service';
+import { UserService } from './service/user.service';
 
 @ApiTags('Users')
 @UseGuards(AuthenticationGuard)

@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { Test } from '@nestjs/testing';
 import { describe } from 'node:test';
-import { UserService } from '../../users/user.service';
+import { UserService } from '../../users/service/user.service';
 import { MockAuthenticationService } from '../mocks/authentication.mock';
 import { AuthenticationService, JwtPayload, TokenType } from './authentication.services';
 

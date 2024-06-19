@@ -4,7 +4,7 @@ import { v4 as uuid } from 'uuid';
 
 import { JsonWebTokenError, JwtService, NotBeforeError, TokenExpiredError } from '@nestjs/jwt';
 import { User } from 'src/modules/users/schema/user.schema';
-import { UserService } from 'src/modules/users/user.service';
+import { UserService } from 'src/modules/users/service/user.service';
 
 export interface AuthenticationTokens {
   readonly accessToken: string;
