@@ -1,10 +1,12 @@
-import { Body, Controller, Post, Res, UnauthorizedException } from '@nestjs/common';
+import { Body, Controller, HttpCode, Post, Req, Res, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { Response } from 'express';
+import { ApiCookieAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { Request, Response } from 'express';
 import { LoginRequestDTO } from './dto/login.dto';
 import { ResponseLoginDto } from './dto/response.dto';
 import { AuthenticationService, AuthenticationTokens, TokenType } from './services/authentication.services';
 
+@ApiTags('Authentication')
 @Controller('api/auth')
 export class AuthenticationController {
   constructor(
@@ -26,6 +28,34 @@ export class AuthenticationController {
 
     const tokens = await this.authenticationService.createAuthenticationTokens(user._id.toString());
 
+    this.setResponseCookie(tokens, response);
+
+    const { accessTokenExpiresAt, refreshTokenExpiresAt } = tokens;
+    return {
+      accessTokenExpiresAt,
+      refreshTokenExpiresAt,
+    };
+  }
+
+  @Post('/refresh')
+  @HttpCode(200)
+  @ApiCookieAuth()
+  @ApiOkResponse({
+    description: 'The user has been successfully logged-out.',
+    type: ResponseLoginDto,
+  })
+  async refreshTokenCookie(
+    @Req() request: Request,
+    @Res({ passthrough: true }) response: Response
+  ): Promise<ResponseLoginDto> {
+    const refreshToken = request.cookies[TokenType.RefreshToken];
+    if (!refreshToken) {
+      throw new UnauthorizedException('Missing refresh cookie.');
+    }
+
+    const payload = await this.authenticationService.verifyRefreshToken(refreshToken);
+
+    const tokens = await this.authenticationService.createAuthenticationTokens(payload.id);
     this.setResponseCookie(tokens, response);
 
     const { accessTokenExpiresAt, refreshTokenExpiresAt } = tokens;
