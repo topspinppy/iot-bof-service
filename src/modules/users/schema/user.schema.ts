@@ -5,7 +5,7 @@ import * as mongoosePaginate from 'mongoose-paginate-v2';
 
 export type UserDocument = User & Document;
 
-@Schema()
+@Schema({ timestamps: true })
 export class User {
   @Transform(({ value }) => value.toString())
   _id: Types.ObjectId;
@@ -44,18 +44,6 @@ export class User {
     maxLength: 100,
   })
   email: string;
-
-  @Prop({
-    type: Date,
-    default: new Date(),
-  })
-  lastLoggedInAt: Date;
-
-  @Prop({
-    type: Date,
-    default: new Date(),
-  })
-  deletedAt: Date;
 }
 
 const UserSchema = SchemaFactory.createForClass(User);
