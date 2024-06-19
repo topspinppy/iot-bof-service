@@ -1,4 +1,4 @@
-import { INestApplication, Logger } from '@nestjs/common';
+import { INestApplication, Logger, ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
@@ -21,6 +21,7 @@ async function bootstrap() {
   // Swagger Document
   useSwagger(app);
 
+  app.useGlobalPipes(new ValidationPipe());
   app.use(cookieParser());
   app.use(express.json({ limit: '10mb' }));
   app.use(express.urlencoded({ limit: '10mb', extended: true }));

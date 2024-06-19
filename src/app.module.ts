@@ -5,6 +5,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigSchema } from './config.schema';
 import { AuthenticationModule } from './modules/authentication/authentication.module';
+import { DeviceModule } from './modules/devices/device.module';
 import { UserModule } from './modules/users/user.module';
 
 @Module({
@@ -27,6 +28,7 @@ import { UserModule } from './modules/users/user.module';
     }),
     AuthenticationModule,
     UserModule,
+    DeviceModule,
   ],
   controllers: [AppController],
   providers: [AppService],
