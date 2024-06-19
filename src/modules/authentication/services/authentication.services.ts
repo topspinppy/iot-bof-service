@@ -2,12 +2,7 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { v4 as uuid } from 'uuid';
 
-import {
-  JsonWebTokenError,
-  JwtService,
-  NotBeforeError,
-  TokenExpiredError,
-} from '@nestjs/jwt';
+import { JsonWebTokenError, JwtService, NotBeforeError, TokenExpiredError } from '@nestjs/jwt';
 import { User } from 'src/modules/users/schema/user.schema';
 import { UserService } from 'src/modules/users/user.service';
 
@@ -38,7 +33,7 @@ export class AuthenticationService {
 
   constructor(
     readonly config: ConfigService,
-    private readonly userService: UserService,
+    private readonly userService: UserService
   ) {
     this._accessTokenJwtService = new JwtService({
       secret: config.get('JWT_ACCESS_TOKEN_SECRET_KEY'),
@@ -52,19 +47,11 @@ export class AuthenticationService {
   }
 
   async verifyAccessToken(accessToken: string): Promise<JwtPayload> {
-    return await this.verifyToken(
-      accessToken,
-      TokenType.AccessToken,
-      this.accessTokenJwtService,
-    );
+    return await this.verifyToken(accessToken, TokenType.AccessToken, this.accessTokenJwtService);
   }
 
   async verifyRefreshToken(refreshToken: string): Promise<JwtPayload> {
-    return await this.verifyToken(
-      refreshToken,
-      TokenType.RefreshToken,
-      this.refreshTokenJwtService,
-    );
+    return await this.verifyToken(refreshToken, TokenType.RefreshToken, this.refreshTokenJwtService);
   }
 
   async loginWithPassword(email: string, password: string): Promise<User> {
@@ -72,9 +59,7 @@ export class AuthenticationService {
     return user;
   }
 
-  async createAuthenticationTokens(
-    userId: string,
-  ): Promise<AuthenticationTokens> {
+  async createAuthenticationTokens(userId: string): Promise<AuthenticationTokens> {
     const accessToken = await this.accessTokenJwtService.signAsync({
       id: userId,
       jti: uuid(),
@@ -108,11 +93,7 @@ export class AuthenticationService {
     return this._refreshTokenJwtService;
   }
 
-  private async verifyToken(
-    token: string,
-    tokenType: TokenType,
-    jwtService: JwtService,
-  ): Promise<JwtPayload> {
+  private async verifyToken(token: string, tokenType: TokenType, jwtService: JwtService): Promise<JwtPayload> {
     let payload: JwtPayload;
     try {
       payload = await jwtService.verifyAsync(token);

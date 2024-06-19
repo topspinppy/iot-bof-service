@@ -37,7 +37,6 @@ export class AuthenticationGuard implements CanActivate {
   private getAccessToken(request: Request): string {
     const headerToken = ExtractJwt.fromAuthHeaderAsBearerToken()(request);
     if (headerToken) return headerToken;
-    console.log(request);
     const accessToken = request.cookies[TokenType.AccessToken];
     if (!accessToken) {
       throw new UnauthorizedException('Invalid authorization header or cookie.');
