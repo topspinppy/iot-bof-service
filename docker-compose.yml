@@ -7,8 +7,17 @@ services:
       context: .
       dockerfile: ./Dockerfile
     ports:
-      - 6000:6000
+      - 2000:2000
+    environment:
+      - MONGODB_URI=mongodb://mongo:27017/iot-bof-service?retryWrites=true&w=majority
+      - PORT=2000
+      - JWT_ACCESS_TOKEN_SECRET_KEY=eOPbB9EMAoxFDwrZx0M8bJOWiOPCor40y7kfXhRJG7RKe4wmz2QEz98P1WTOzx53
+      - JWT_ACCESS_TOKEN_EXPIRES_IN=1h
+      - JWT_REFRESH_TOKEN_SECRET_KEY=rtpTa5wXRo72wsEHlQM1T5J5OD4PnQOJgwxAoNm85anXaxRUo5nsLUtFmNoSQOtw
+      - JWT_REFRESH_TOKEN_EXPIRES_IN=2d
     command: ['node', 'dist/main']
+    networks:
+      - mynetwork
 
   mongo:
     image: mongo:latest
@@ -16,6 +25,12 @@ services:
       - '27017:27017'
     volumes:
       - mongo-data:/data/db
+    networks:
+      - mynetwork
+
+networks:
+  mynetwork:
+    driver: bridge
 
 volumes:
   mongo-data:
