@@ -74,6 +74,7 @@ export class AuthenticationService {
       type: TokenType.RefreshToken,
     });
     const refreshTokenPayload = await this.verifyRefreshToken(refreshToken);
+
     const refreshTokenExpiresAt = new Date(refreshTokenPayload.exp * 1000);
 
     //Insert DB

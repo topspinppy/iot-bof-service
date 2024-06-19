@@ -10,7 +10,7 @@ import { User, UserDocument } from './schema/user.schema';
 export class UserService {
   constructor(
     @InjectModel(User.name)
-    private readonly userModel: Model<UserDocument>,
+    private readonly userModel: Model<UserDocument>
   ) {}
 
   async create(newUser: CreateUserDto): Promise<User> {
