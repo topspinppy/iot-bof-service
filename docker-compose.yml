@@ -15,6 +15,7 @@ services:
       - JWT_ACCESS_TOKEN_EXPIRES_IN=1h
       - JWT_REFRESH_TOKEN_SECRET_KEY=rtpTa5wXRo72wsEHlQM1T5J5OD4PnQOJgwxAoNm85anXaxRUo5nsLUtFmNoSQOtw
       - JWT_REFRESH_TOKEN_EXPIRES_IN=2d
+      - AUTH_ORIGIN=*
     command: ['node', 'dist/main']
     networks:
       - mynetwork

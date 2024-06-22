@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpCode, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, Post, Req, UnauthorizedException, UseGuards } from '@nestjs/common';
 import { ApiBody, ApiOkResponse, ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
 import { Request } from 'express';
 import { AuthenticationGuard } from '../shared/guards/auth.guard';
@@ -35,8 +35,10 @@ export class UserController {
   @ApiOperation({ summary: 'Returns a current user profile.' })
   @ApiOkResponse({ type: User })
   async getCurrentProfile(@Req() request: Request): Promise<User> {
-    console.log(request);
     const userId = request.user['id'];
+    if (!userId) {
+      throw new UnauthorizedException('Missing access token cookie.');
+    }
     const user = await this.userService.findById(userId);
     return user;
   }

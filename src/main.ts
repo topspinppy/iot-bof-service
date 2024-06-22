@@ -33,7 +33,9 @@ async function bootstrap() {
   app.use(express.urlencoded({ limit: '10mb', extended: true }));
 
   app.enableCors({
-    origin: '*',
+    origin: 'http://localhost:3000',
+    credentials: true,
+    allowedHeaders: 'Authorization,Content-Type',
   });
 
   const port = configService.get<number>('PORT', 2000);
