@@ -28,7 +28,7 @@ export class UserService {
   }
 
   async findById(userId: string): Promise<UserDocument> {
-    const user = await this.userModel.findById({ _id: userId });
+    const user = await this.userModel.findById({ _id: userId }).select({ _id: 1, userName: 1, fullName: 1, email: 1 });
     return user;
   }
 

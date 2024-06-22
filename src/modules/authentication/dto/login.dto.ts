@@ -4,11 +4,11 @@ import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
 export class LoginRequestDTO {
   @IsString()
   @IsEmail({}, { message: 'Invalid email format' })
-  @ApiProperty({ required: true, example: 'admin@admin.com' })
+  @ApiProperty({ required: true, example: 'admin1@test.com' })
   @IsNotEmpty()
   readonly email: string;
 
-  @ApiProperty({ required: true, example: '1234' })
+  @ApiProperty({ required: true, example: '12345' })
   @IsString()
   @IsNotEmpty()
   readonly password: string;

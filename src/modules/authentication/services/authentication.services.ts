@@ -74,9 +74,7 @@ export class AuthenticationService {
       type: TokenType.RefreshToken,
     });
     const refreshTokenPayload = await this.verifyRefreshToken(refreshToken);
-
     const refreshTokenExpiresAt = new Date(refreshTokenPayload.exp * 1000);
-
     //Insert DB
     return {
       accessToken,
@@ -85,7 +83,6 @@ export class AuthenticationService {
       refreshTokenExpiresAt,
     };
   }
-
   get accessTokenJwtService() {
     return this._accessTokenJwtService;
   }
