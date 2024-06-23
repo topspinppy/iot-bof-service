@@ -1,10 +1,26 @@
-import { Body, Controller, HttpCode, Post, Req, Res, UnauthorizedException } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  HttpCode,
+  Post,
+  Req,
+  Res,
+  UnauthorizedException,
+  UseGuards
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { ApiCookieAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { ApiCookieAuth, ApiOkResponse, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
+import dayjs from 'dayjs';
 import { Request, Response } from 'express';
+import { AuthenticationGuard } from '../shared/guards/auth.guard';
 import { LoginRequestDTO } from './dto/login.dto';
 import { ResponseLoginDto } from './dto/response.dto';
 import { AuthenticationService, AuthenticationTokens, TokenType } from './services/authentication.services';
+
+export class TokenExpiredResult {
+  accessTokenExpiresAt: Date;
+  refreshTokenExpiresAt: Date;
+}
 
 @ApiTags('Authentication')
 @Controller('api/auth')
@@ -31,6 +47,35 @@ export class AuthenticationController {
     this.setResponseCookie(tokens, response);
 
     const { accessTokenExpiresAt, refreshTokenExpiresAt } = tokens;
+    return {
+      accessTokenExpiresAt,
+      refreshTokenExpiresAt,
+    };
+  }
+
+  @UseGuards(AuthenticationGuard)
+  @Post('logout')
+  @HttpCode(200)
+  @ApiCookieAuth()
+  @ApiOkResponse({
+    description: 'The user has been successfully logged-out.',
+    type: TokenExpiredResult,
+  })
+  @ApiUnauthorizedResponse({
+    description: 'Invalid authorization header or cookie.',
+  })
+  logout(@Res({ passthrough: true }) response: Response): TokenExpiredResult {
+    const lastDay = dayjs().add(-1, 'day').toDate();
+    const expiredToken = {
+      accessToken: '',
+      accessTokenExpiresAt: lastDay,
+      refreshToken: '',
+      refreshTokenExpiresAt: lastDay,
+    };
+
+    this.setResponseCookie(expiredToken, response);
+
+    const { accessTokenExpiresAt, refreshTokenExpiresAt } = expiredToken;
     return {
       accessTokenExpiresAt,
       refreshTokenExpiresAt,

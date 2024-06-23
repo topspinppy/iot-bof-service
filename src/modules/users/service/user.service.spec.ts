@@ -74,15 +74,21 @@ describe('UserService', () => {
   describe('findById', () => {
     it('should find a user by id', async () => {
       const userId = '4edd40c86762e0fb12000003';
-      const user = mockUser(userId);
-
-      userModel.findById.mockReturnValue({
-        exec: jest.fn().mockReturnValue(user),
-      } as any);
+      const mockUser: Partial<UserDocument> = {
+        _id: new Types.ObjectId('4edd40c86762e0fb12000003'),
+        userName: 'testUser',
+        fullName: 'Test User',
+        email: 'test@example.com',
+      };
+      (userModel.findById as jest.Mock).mockReturnValue({
+        select: jest.fn().mockResolvedValue(mockUser),
+      });
 
       const foundUser = await service.findById(userId);
-      expect(foundUser['exec']()).toBeDefined();
-      expect(foundUser['exec']()['email']).toBe('test@example.com');
+
+      expect(userModel.findById).toHaveBeenCalledWith({ _id: userId });
+      expect(foundUser).toBeDefined();
+      expect(foundUser.email).toBe('test@example.com');
     });
   });
 
